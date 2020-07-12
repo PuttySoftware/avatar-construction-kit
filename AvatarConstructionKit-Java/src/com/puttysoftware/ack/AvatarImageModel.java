@@ -1,8 +1,11 @@
 package com.puttysoftware.ack;
 
 import java.awt.Color;
+import java.io.IOException;
 
 import com.puttysoftware.ack.internal.AvatarColors;
+import com.puttysoftware.ack.internal.AvatarImageLoader;
+import com.puttysoftware.images.BufferedImageIcon;
 
 public final class AvatarImageModel {
     // Fields
@@ -21,6 +24,8 @@ public final class AvatarImageModel {
     private final Color accessoryColor1;
     private final Color accessoryColor2;
     private final ColorReplaceRules rules;
+    private final ColorReplaceRules weaponRules;
+    private final ColorReplaceRules accessoryRules;
 
     public AvatarImageModel(final int family, final int weapon,
             final int accessory, final int misc, final Color hair,
@@ -43,6 +48,8 @@ public final class AvatarImageModel {
         this.accessoryColor1 = accessory1;
         this.accessoryColor2 = accessory2;
         this.rules = new ColorReplaceRules();
+        this.weaponRules = new ColorReplaceRules();
+        this.accessoryRules = new ColorReplaceRules();
         this.addRules();
     }
 
@@ -53,10 +60,12 @@ public final class AvatarImageModel {
         this.rules.add(AvatarColors.pantsBase, this.legsColor);
         this.rules.add(AvatarColors.shoesBase, this.feetColor);
         this.rules.add(AvatarColors.eyesBase, this.eyesColor);
-        this.rules.add(AvatarColors.weapon1Base, this.weaponColor1);
-        this.rules.add(AvatarColors.weapon2Base, this.weaponColor2);
-        this.rules.add(AvatarColors.accessory1Base, this.accessoryColor1);
-        this.rules.add(AvatarColors.accessory2Base, this.accessoryColor2);
+        this.weaponRules.add(AvatarColors.weapon1Base, this.weaponColor1);
+        this.weaponRules.add(AvatarColors.weapon2Base, this.weaponColor2);
+        this.accessoryRules.add(AvatarColors.accessory1Base,
+                this.accessoryColor1);
+        this.accessoryRules.add(AvatarColors.accessory2Base,
+                this.accessoryColor2);
     }
 
     public int getAvatarFamilyID() {
@@ -115,6 +124,14 @@ public final class AvatarImageModel {
         return this.rules;
     }
 
+    public ColorReplaceRules getWeaponRules() {
+        return this.weaponRules;
+    }
+
+    public ColorReplaceRules getAccessoryRules() {
+        return this.accessoryRules;
+    }
+
     public String getAvatarImageID() {
         StringBuilder builder = new StringBuilder();
         builder.append(intToHex4(this.familyID));
@@ -131,6 +148,10 @@ public final class AvatarImageModel {
         builder.append(colorToHex24(this.accessoryColor2));
         builder.append(intToHex8(this.miscID));
         return builder.toString();
+    }
+
+    public BufferedImageIcon generateAvatarImage() throws IOException {
+        return AvatarImageLoader.loadFromModel(this);
     }
 
     private static String intToHex4(int value) {

@@ -22,8 +22,14 @@ public class AvatarImageLoader {
         final String name = "/assets/avatar/"
                 + Integer.toHexString(model.getAvatarFamilyID()).toUpperCase()
                 + imageExt;
-        return model.getRules().applyAll(ImageLoader.load(name,
-                AvatarImageLoader.class.getResource(name)));
+        BufferedImageIcon image = ImageLoader.load(name,
+                AvatarImageLoader.class.getResource(name));
+        image = model.getRules().applyAll(image);
+        BufferedImageIcon weaponImage = AvatarImageLoader
+                .loadWeapon(model.getAvatarWeaponID(), model.getWeaponRules());
+        BufferedImageIcon accessoryImage = AvatarImageLoader.loadAccessory(
+                model.getAvatarAccessoryID(), model.getAccessoryRules());
+        return ImageCompositor.composite(image, accessoryImage, weaponImage);
     }
 
     public static BufferedImageIcon loadWeapon(final int weaponID,
