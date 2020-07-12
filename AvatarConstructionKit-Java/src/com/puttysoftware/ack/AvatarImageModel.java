@@ -1,88 +1,147 @@
 package com.puttysoftware.ack;
 
+import java.awt.Color;
+
 import com.puttysoftware.ack.internal.AvatarColors;
 
 public final class AvatarImageModel {
     // Fields
     private final int familyID;
-    private final int hairID;
-    private final int skinID;
-    private final int bodyID;
-    private final int pantsID;
-    private final int shoesID;
-    private final int eyesID;
+    private final int weaponID;
+    private final int accessoryID;
+    private final int miscID;
+    private final Color hairColor;
+    private final Color skinColor;
+    private final Color torsoColor;
+    private final Color legsColor;
+    private final Color feetColor;
+    private final Color eyesColor;
+    private final Color weaponColor1;
+    private final Color weaponColor2;
+    private final Color accessoryColor1;
+    private final Color accessoryColor2;
     private final ColorReplaceRules rules;
 
-    public AvatarImageModel(final int legacyFamily, final int hair,
-            final int skin) {
-        this.familyID = 0;
-        this.hairID = hair;
-        this.skinID = skin;
-        this.bodyID = legacyFamily;
-        this.pantsID = legacyFamily;
-        this.shoesID = skin;
-        this.eyesID = 0;
-        this.rules = new ColorReplaceRules();
-        this.addRules();
-    }
-
-    public AvatarImageModel(final int family, final int hair, final int skin,
-            final int body, final int pants, final int shoes, final int eyes) {
+    public AvatarImageModel(final int family, final int weapon,
+            final int accessory, final int misc, final Color hair,
+            final Color skin, final Color torso, final Color legs,
+            final Color feet, final Color eyes, final Color weapon1,
+            final Color weapon2, final Color accessory1,
+            final Color accessory2) {
         this.familyID = family;
-        this.hairID = hair;
-        this.skinID = skin;
-        this.bodyID = body;
-        this.pantsID = pants;
-        this.shoesID = shoes;
-        this.eyesID = eyes;
+        this.weaponID = weapon;
+        this.accessoryID = accessory;
+        this.miscID = misc;
+        this.hairColor = hair;
+        this.skinColor = skin;
+        this.torsoColor = torso;
+        this.legsColor = legs;
+        this.feetColor = feet;
+        this.eyesColor = eyes;
+        this.weaponColor1 = weapon1;
+        this.weaponColor2 = weapon2;
+        this.accessoryColor1 = accessory1;
+        this.accessoryColor2 = accessory2;
         this.rules = new ColorReplaceRules();
         this.addRules();
     }
 
-    private final void addRules() {
-        this.rules.add(AvatarColors.hairBase,
-                AvatarColors.hairTable[this.hairID]);
-        this.rules.add(AvatarColors.skinBase,
-                AvatarColors.skinTable[this.skinID]);
-        this.rules.add(AvatarColors.bodyBase,
-                AvatarColors.bodyTable[this.bodyID]);
-        this.rules.add(AvatarColors.pantsBase,
-                AvatarColors.pantsTable[this.pantsID]);
-        this.rules.add(AvatarColors.shoesBase,
-                AvatarColors.shoesTable[this.shoesID]);
-        this.rules.add(AvatarColors.eyesBase,
-                AvatarColors.eyesTable[this.eyesID]);
+    private void addRules() {
+        this.rules.add(AvatarColors.hairBase, this.hairColor);
+        this.rules.add(AvatarColors.skinBase, this.skinColor);
+        this.rules.add(AvatarColors.bodyBase, this.torsoColor);
+        this.rules.add(AvatarColors.pantsBase, this.legsColor);
+        this.rules.add(AvatarColors.shoesBase, this.feetColor);
+        this.rules.add(AvatarColors.eyesBase, this.eyesColor);
+        this.rules.add(AvatarColors.weapon1Base, this.weaponColor1);
+        this.rules.add(AvatarColors.weapon2Base, this.weaponColor2);
+        this.rules.add(AvatarColors.accessory1Base, this.accessoryColor1);
+        this.rules.add(AvatarColors.accessory2Base, this.accessoryColor2);
     }
 
     public int getAvatarFamilyID() {
         return this.familyID;
     }
 
-    public int getAvatarHairID() {
-        return this.hairID;
+    public int getAvatarWeaponID() {
+        return this.weaponID;
     }
 
-    public int getAvatarSkinID() {
-        return this.skinID;
+    public int getAvatarAccessoryID() {
+        return this.accessoryID;
     }
 
-    public int getAvatarBodyID() {
-        return this.bodyID;
+    public Color getAvatarHairColor() {
+        return this.hairColor;
     }
 
-    public int getAvatarPantsID() {
-        return this.pantsID;
+    public Color getAvatarSkinColor() {
+        return this.skinColor;
     }
 
-    public int getAvatarShoesID() {
-        return this.shoesID;
+    public Color getAvatarTorsoColor() {
+        return this.torsoColor;
     }
 
-    public int getAvatarEyesID() {
-        return this.eyesID;
+    public Color getAvatarLegsColor() {
+        return this.legsColor;
+    }
+
+    public Color getAvatarFeetColor() {
+        return this.feetColor;
+    }
+
+    public Color getAvatarEyesColor() {
+        return this.eyesColor;
+    }
+
+    public Color getAvatarWeaponColor1() {
+        return this.weaponColor1;
+    }
+
+    public Color getAvatarWeaponColor2() {
+        return this.weaponColor2;
+    }
+
+    public Color getAvatarAccessoryColor1() {
+        return this.accessoryColor1;
+    }
+
+    public Color getAvatarAccessoryColor2() {
+        return this.accessoryColor2;
     }
 
     public ColorReplaceRules getRules() {
         return this.rules;
+    }
+
+    public String getAvatarImageID() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(intToHex4(this.familyID));
+        builder.append(intToHex4(this.accessoryID * 4 + this.weaponID));
+        builder.append(colorToHex24(this.hairColor));
+        builder.append(colorToHex24(this.skinColor));
+        builder.append(colorToHex24(this.torsoColor));
+        builder.append(colorToHex24(this.legsColor));
+        builder.append(colorToHex24(this.feetColor));
+        builder.append(colorToHex24(this.eyesColor));
+        builder.append(colorToHex24(this.weaponColor1));
+        builder.append(colorToHex24(this.weaponColor2));
+        builder.append(colorToHex24(this.accessoryColor1));
+        builder.append(colorToHex24(this.accessoryColor2));
+        builder.append(intToHex8(this.miscID));
+        return builder.toString();
+    }
+
+    private static String intToHex4(int value) {
+        return String.format("%1$01X", value);
+    }
+
+    private static String intToHex8(int value) {
+        return String.format("%1$02X", value);
+    }
+
+    private static String colorToHex24(Color value) {
+        return String.format("%1$06X", value.getRGB() << 8 >>> 8);
     }
 }

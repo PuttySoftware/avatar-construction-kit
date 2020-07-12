@@ -6,14 +6,71 @@ Any questions should be directed to the author via email at: products@puttysoftw
  */
 package com.puttysoftware.ack;
 
+import java.awt.Color;
 import java.io.IOException;
 
+import javax.swing.JColorChooser;
+
+import com.puttysoftware.ack.internal.AvatarColors;
 import com.puttysoftware.ack.internal.AvatarImageLoader;
+import com.puttysoftware.ack.internal.ImageListDialog;
 import com.puttysoftware.ack.internal.ImageListWithDescDialog;
 import com.puttysoftware.images.BufferedImageIcon;
 import com.puttysoftware.randomrange.RandomRange;
 
 public class AvatarConstructionKit {
+    // Fields
+    private static final int randomFamilyID = RandomRange.generate(0, 15);
+    private static final Color randomSkinColor = new Color(
+            RandomRange.generate(0, 255), RandomRange.generate(0, 255),
+            RandomRange.generate(0, 255));
+    private static final Color randomHairColor = new Color(
+            RandomRange.generate(0, 255), RandomRange.generate(0, 255),
+            RandomRange.generate(0, 255));
+    private static final Color randomTorsoColor = new Color(
+            RandomRange.generate(0, 255), RandomRange.generate(0, 255),
+            RandomRange.generate(0, 255));
+    private static final Color randomLegsColor = new Color(
+            RandomRange.generate(0, 255), RandomRange.generate(0, 255),
+            RandomRange.generate(0, 255));
+    private static final Color randomEyesColor = new Color(
+            RandomRange.generate(0, 255), RandomRange.generate(0, 255),
+            RandomRange.generate(0, 255));
+    private static final Color randomFeetColor = new Color(
+            RandomRange.generate(0, 255), RandomRange.generate(0, 255),
+            RandomRange.generate(0, 255));
+    private static final Color randomWeaponColor1 = new Color(
+            RandomRange.generate(0, 255), RandomRange.generate(0, 255),
+            RandomRange.generate(0, 255));
+    private static final Color randomWeaponColor2 = new Color(
+            RandomRange.generate(0, 255), RandomRange.generate(0, 255),
+            RandomRange.generate(0, 255));
+    private static final Color randomAccessoryColor1 = new Color(
+            RandomRange.generate(0, 255), RandomRange.generate(0, 255),
+            RandomRange.generate(0, 255));
+    private static final Color randomAccessoryColor2 = new Color(
+            RandomRange.generate(0, 255), RandomRange.generate(0, 255),
+            RandomRange.generate(0, 255));
+    private static final int randomWeaponID = RandomRange.generate(0, 3);
+    private static final int randomAccessoryID = RandomRange.generate(0, 3);
+    private static int currentFamilyID = randomFamilyID;
+    private static Color currentSkinColor = randomSkinColor;
+    private static Color currentHairColor = randomHairColor;
+    private static Color currentTorsoColor = randomTorsoColor;
+    private static Color currentLegsColor = randomLegsColor;
+    private static Color currentEyesColor = randomEyesColor;
+    private static Color currentFeetColor = randomFeetColor;
+    private static Color currentWeaponColor1 = randomWeaponColor1;
+    private static Color currentWeaponColor2 = randomWeaponColor2;
+    private static Color currentAccessoryColor1 = randomAccessoryColor1;
+    private static Color currentAccessoryColor2 = randomAccessoryColor2;
+    private static int currentWeaponID = randomWeaponID;
+    private static int currentAccessoryID = randomAccessoryID;
+    private static int miscBits = 0;
+    private static final ColorReplaceRules rules = new ColorReplaceRules();
+    private static final ColorReplaceRules weaponRules = new ColorReplaceRules();
+    private static final ColorReplaceRules accessoryRules = new ColorReplaceRules();
+
     // Constructors
     private AvatarConstructionKit() {
         // Do nothing
@@ -21,125 +78,183 @@ public class AvatarConstructionKit {
 
     // Methods
     public static AvatarImageModel constructAvatar() throws IOException {
-        final int randomSkin = RandomRange.generate(0, 9);
-        final int randomHair = RandomRange.generate(0, 9);
-        final int avatarFamily = AvatarConstructionKit
-                .pickAvatarFamily(randomSkin, randomHair);
-        if (avatarFamily != ImageListWithDescDialog.CANCEL) {
-            final int avatarSkin = AvatarConstructionKit
-                    .pickAvatarSkinColor(avatarFamily, randomHair);
-            if (avatarSkin != ImageListWithDescDialog.CANCEL) {
-                final int avatarHair = AvatarConstructionKit
-                        .pickAvatarHairColor(avatarFamily, avatarSkin);
-                if (avatarHair != ImageListWithDescDialog.CANCEL) {
-                    return new AvatarImageModel(avatarFamily, avatarSkin,
-                            avatarHair);
-                }
-            }
+        // Populate rules
+        rules.add(AvatarColors.hairBase, currentHairColor);
+        rules.add(AvatarColors.skinBase, currentSkinColor);
+        rules.add(AvatarColors.bodyBase, currentTorsoColor);
+        rules.add(AvatarColors.pantsBase, currentLegsColor);
+        rules.add(AvatarColors.shoesBase, currentFeetColor);
+        rules.add(AvatarColors.eyesBase, currentEyesColor);
+        weaponRules.add(AvatarColors.weapon1Base, currentWeaponColor1);
+        weaponRules.add(AvatarColors.weapon2Base, currentWeaponColor2);
+        accessoryRules.add(AvatarColors.accessory1Base, currentAccessoryColor1);
+        accessoryRules.add(AvatarColors.accessory2Base, currentAccessoryColor2);
+        // Construct avatar
+        currentFamilyID = AvatarConstructionKit.pickAvatarFamily();
+        if (currentFamilyID == ImageListWithDescDialog.CANCEL) {
+            return null;
         }
-        return null;
+        currentSkinColor = AvatarConstructionKit.pickAvatarSkinColor();
+        if (currentSkinColor == null) {
+            return null;
+        }
+        currentHairColor = AvatarConstructionKit.pickAvatarHairColor();
+        if (currentHairColor == null) {
+            return null;
+        }
+        currentEyesColor = AvatarConstructionKit.pickAvatarEyesColor();
+        if (currentEyesColor == null) {
+            return null;
+        }
+        currentTorsoColor = AvatarConstructionKit.pickAvatarTorsoColor();
+        if (currentTorsoColor == null) {
+            return null;
+        }
+        currentLegsColor = AvatarConstructionKit.pickAvatarLegsColor();
+        if (currentLegsColor == null) {
+            return null;
+        }
+        currentFeetColor = AvatarConstructionKit.pickAvatarFeetColor();
+        if (currentFeetColor == null) {
+            return null;
+        }
+        currentWeaponID = AvatarConstructionKit.pickAvatarWeapon();
+        if (currentWeaponID == ImageListWithDescDialog.CANCEL) {
+            return null;
+        }
+        currentWeaponColor1 = AvatarConstructionKit.pickAvatarWeaponColor1();
+        if (currentWeaponColor1 == null) {
+            return null;
+        }
+        currentWeaponColor2 = AvatarConstructionKit.pickAvatarWeaponColor2();
+        if (currentWeaponColor2 == null) {
+            return null;
+        }
+        currentAccessoryID = AvatarConstructionKit.pickAvatarAccessory();
+        if (currentAccessoryID == ImageListWithDescDialog.CANCEL) {
+            return null;
+        }
+        currentAccessoryColor1 = AvatarConstructionKit
+                .pickAvatarAccessoryColor1();
+        if (currentAccessoryColor1 == null) {
+            return null;
+        }
+        currentAccessoryColor2 = AvatarConstructionKit
+                .pickAvatarAccessoryColor2();
+        if (currentAccessoryColor2 == null) {
+            return null;
+        }
+        return new AvatarImageModel(currentFamilyID, currentWeaponID,
+                currentAccessoryID, miscBits, currentHairColor,
+                currentSkinColor, currentTorsoColor, currentLegsColor,
+                currentFeetColor, currentEyesColor, currentWeaponColor1,
+                currentWeaponColor2, currentAccessoryColor1,
+                currentAccessoryColor2);
     }
 
-    private static int pickAvatarFamily(final int randomSkinID,
-            final int randomHairID) throws IOException {
+    private static int pickAvatarFamily() throws IOException {
         final String labelText = "Avatar Families";
         final String title = "Pick Avatar Family";
         final BufferedImageIcon[] input = new BufferedImageIcon[] {
-                AvatarImageLoader.load(0,
-                        new AvatarImageModel(0, randomSkinID, randomHairID)
-                                .getRules()),
-                AvatarImageLoader.load(0,
-                        new AvatarImageModel(1, randomSkinID, randomHairID)
-                                .getRules()),
-                AvatarImageLoader.load(0,
-                        new AvatarImageModel(2, randomSkinID, randomHairID)
-                                .getRules()),
-                AvatarImageLoader.load(0,
-                        new AvatarImageModel(3, randomSkinID, randomHairID)
-                                .getRules()),
-                AvatarImageLoader.load(0,
-                        new AvatarImageModel(4, randomSkinID, randomHairID)
-                                .getRules()),
-                AvatarImageLoader.load(0,
-                        new AvatarImageModel(5, randomSkinID, randomHairID)
-                                .getRules()) };
-        final String[] descriptions = new String[] { "Green", "Red", "Yellow",
-                "Cyan", "Pink", "Blue" };
+                AvatarImageLoader.load(0, rules),
+                AvatarImageLoader.load(1, rules),
+                AvatarImageLoader.load(2, rules),
+                AvatarImageLoader.load(3, rules),
+                AvatarImageLoader.load(4, rules),
+                AvatarImageLoader.load(5, rules),
+                AvatarImageLoader.load(6, rules),
+                AvatarImageLoader.load(7, rules),
+                AvatarImageLoader.load(8, rules),
+                AvatarImageLoader.load(9, rules),
+                AvatarImageLoader.load(10, rules),
+                AvatarImageLoader.load(11, rules),
+                AvatarImageLoader.load(12, rules),
+                AvatarImageLoader.load(13, rules),
+                AvatarImageLoader.load(14, rules),
+                AvatarImageLoader.load(15, rules) };
+        return ImageListDialog.showDialog(null, labelText, title, input,
+                currentFamilyID);
+    }
+
+    private static int pickAvatarWeapon() throws IOException {
+        final String labelText = "Avatar Weapons";
+        final String title = "Pick Avatar Weapon";
+        final BufferedImageIcon[] input = new BufferedImageIcon[] {
+                AvatarImageLoader.loadWeapon(0, weaponRules),
+                AvatarImageLoader.loadWeapon(1, weaponRules),
+                AvatarImageLoader.loadWeapon(2, weaponRules),
+                AvatarImageLoader.loadWeapon(3, weaponRules) };
+        final String[] descriptions = new String[] { "Bow", "Stone", "Sword",
+                "Wand" };
         return ImageListWithDescDialog.showDialog(null, labelText, title, input,
                 0, descriptions[0], descriptions);
     }
 
-    private static int pickAvatarSkinColor(final int familyID,
-            final int randomHairID) throws IOException {
-        final String labelText = "Avatar Skin Colors";
+    private static int pickAvatarAccessory() throws IOException {
+        final String labelText = "Avatar Accessories";
+        final String title = "Pick Avatar Accessory";
+        final BufferedImageIcon[] input = new BufferedImageIcon[] {
+                AvatarImageLoader.loadAccessory(0, accessoryRules),
+                AvatarImageLoader.loadAccessory(1, accessoryRules),
+                AvatarImageLoader.loadAccessory(2, accessoryRules),
+                AvatarImageLoader.loadAccessory(3, accessoryRules) };
+        final String[] descriptions = new String[] { "Amulet", "Arrow", "Shard",
+                "Shield" };
+        return ImageListWithDescDialog.showDialog(null, labelText, title, input,
+                0, descriptions[0], descriptions);
+    }
+
+    private static Color pickAvatarSkinColor() {
         final String title = "Pick Avatar Skin Color";
-        final BufferedImageIcon[] input = new BufferedImageIcon[] {
-                AvatarImageLoader.load(0,
-                        new AvatarImageModel(familyID, 0, randomHairID)
-                                .getRules()),
-                AvatarImageLoader.load(0,
-                        new AvatarImageModel(familyID, 1, randomHairID)
-                                .getRules()),
-                AvatarImageLoader.load(0,
-                        new AvatarImageModel(familyID, 2, randomHairID)
-                                .getRules()),
-                AvatarImageLoader.load(0,
-                        new AvatarImageModel(familyID, 3, randomHairID)
-                                .getRules()),
-                AvatarImageLoader.load(0,
-                        new AvatarImageModel(familyID, 4, randomHairID)
-                                .getRules()),
-                AvatarImageLoader.load(0,
-                        new AvatarImageModel(familyID, 5, randomHairID)
-                                .getRules()),
-                AvatarImageLoader.load(0,
-                        new AvatarImageModel(familyID, 6, randomHairID)
-                                .getRules()),
-                AvatarImageLoader.load(0,
-                        new AvatarImageModel(familyID, 7, randomHairID)
-                                .getRules()),
-                AvatarImageLoader.load(0,
-                        new AvatarImageModel(familyID, 8, randomHairID)
-                                .getRules()),
-                AvatarImageLoader.load(0,
-                        new AvatarImageModel(familyID, 9, randomHairID)
-                                .getRules()) };
-        final String[] descriptions = new String[] { "Darkest", "Darker",
-                "Dark", "Mildly Dark", "Slightly Dark", "Slightly Light",
-                "Mildly Light", "Light", "Lighter", "Lightest" };
-        return ImageListWithDescDialog.showDialog(null, labelText, title, input,
-                0, descriptions[0], descriptions);
+        return JColorChooser.showDialog(null, title, currentSkinColor, false);
     }
 
-    private static int pickAvatarHairColor(final int familyID, final int skinID)
-            throws IOException {
-        final String labelText = "Avatar Hair Colors";
+    private static Color pickAvatarHairColor() {
         final String title = "Pick Avatar Hair Color";
-        final BufferedImageIcon[] input = new BufferedImageIcon[] {
-                AvatarImageLoader.load(0,
-                        new AvatarImageModel(familyID, skinID, 0).getRules()),
-                AvatarImageLoader.load(0,
-                        new AvatarImageModel(familyID, skinID, 1).getRules()),
-                AvatarImageLoader.load(0,
-                        new AvatarImageModel(familyID, skinID, 2).getRules()),
-                AvatarImageLoader.load(0,
-                        new AvatarImageModel(familyID, skinID, 3).getRules()),
-                AvatarImageLoader.load(0,
-                        new AvatarImageModel(familyID, skinID, 4).getRules()),
-                AvatarImageLoader.load(0,
-                        new AvatarImageModel(familyID, skinID, 5).getRules()),
-                AvatarImageLoader.load(0,
-                        new AvatarImageModel(familyID, skinID, 6).getRules()),
-                AvatarImageLoader.load(0,
-                        new AvatarImageModel(familyID, skinID, 7).getRules()),
-                AvatarImageLoader.load(0,
-                        new AvatarImageModel(familyID, skinID, 8).getRules()),
-                AvatarImageLoader.load(0,
-                        new AvatarImageModel(familyID, skinID, 9).getRules()) };
-        final String[] descriptions = new String[] { "Black", "Dark Gray",
-                "Dark Brown", "Light Brown", "Red", "Light Gray", "Dark Yellow",
-                "Yellow", "Tan", "Bright Yellow" };
-        return ImageListWithDescDialog.showDialog(null, labelText, title, input,
-                0, descriptions[0], descriptions);
+        return JColorChooser.showDialog(null, title, currentHairColor, false);
+    }
+
+    private static Color pickAvatarEyesColor() {
+        final String title = "Pick Avatar Eyes Color";
+        return JColorChooser.showDialog(null, title, currentEyesColor, false);
+    }
+
+    private static Color pickAvatarTorsoColor() {
+        final String title = "Pick Avatar Torso Color";
+        return JColorChooser.showDialog(null, title, currentTorsoColor, false);
+    }
+
+    private static Color pickAvatarLegsColor() {
+        final String title = "Pick Avatar Legs Color";
+        return JColorChooser.showDialog(null, title, currentLegsColor, false);
+    }
+
+    private static Color pickAvatarFeetColor() {
+        final String title = "Pick Avatar Feet Color";
+        return JColorChooser.showDialog(null, title, currentFeetColor, false);
+    }
+
+    private static Color pickAvatarWeaponColor1() {
+        final String title = "Pick First Avatar Weapon Color";
+        return JColorChooser.showDialog(null, title, currentWeaponColor1,
+                false);
+    }
+
+    private static Color pickAvatarWeaponColor2() {
+        final String title = "Pick Second Avatar Weapon Color";
+        return JColorChooser.showDialog(null, title, currentWeaponColor2,
+                false);
+    }
+
+    private static Color pickAvatarAccessoryColor1() {
+        final String title = "Pick First Avatar Accessory Color";
+        return JColorChooser.showDialog(null, title, currentAccessoryColor1,
+                false);
+    }
+
+    private static Color pickAvatarAccessoryColor2() {
+        final String title = "Pick Second Avatar Accessory Color";
+        return JColorChooser.showDialog(null, title, currentAccessoryColor2,
+                false);
     }
 }

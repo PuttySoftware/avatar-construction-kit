@@ -19,29 +19,45 @@ Any questions should be directed to the author via email at: fantastle@worldwiza
 package com.puttysoftware.ack.internal;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 
+import com.puttysoftware.ack.AvatarImageModel;
 import com.puttysoftware.ack.ColorReplaceRules;
 import com.puttysoftware.images.BufferedImageIcon;
 
 public class AvatarImageLoader {
-    private static Properties fileExtensions;
-
     public static BufferedImageIcon load(final int familyID,
             final ColorReplaceRules rules) throws IOException {
-        if (AvatarImageLoader.fileExtensions == null) {
-            try (InputStream stream = AvatarImageLoader.class
-                    .getResourceAsStream(
-                            "/assets/data/extensions/extensions.properties")) {
-                AvatarImageLoader.fileExtensions = new Properties();
-                AvatarImageLoader.fileExtensions.load(stream);
-            }
-        }
-        final String imageExt = AvatarImageLoader.fileExtensions
-                .getProperty("images");
-        final String name = "/assets/images/avatars/"
-                + Integer.toString(familyID) + imageExt;
+        final String imageExt = ".png";
+        final String name = "/assets/avatar/"
+                + Integer.toHexString(familyID).toUpperCase() + imageExt;
+        return rules.applyAll(ImageLoader.load(name,
+                AvatarImageLoader.class.getResource(name)));
+    }
+
+    public static BufferedImageIcon loadFromModel(final AvatarImageModel model)
+            throws IOException {
+        final String imageExt = ".png";
+        final String name = "/assets/avatar/"
+                + Integer.toHexString(model.getAvatarFamilyID()).toUpperCase()
+                + imageExt;
+        return model.getRules().applyAll(ImageLoader.load(name,
+                AvatarImageLoader.class.getResource(name)));
+    }
+
+    public static BufferedImageIcon loadWeapon(final int weaponID,
+            final ColorReplaceRules rules) throws IOException {
+        final String imageExt = ".png";
+        final String name = "/assets/weapon/"
+                + Integer.toHexString(weaponID).toUpperCase() + imageExt;
+        return rules.applyAll(ImageLoader.load(name,
+                AvatarImageLoader.class.getResource(name)));
+    }
+
+    public static BufferedImageIcon loadAccessory(final int accessoryID,
+            final ColorReplaceRules rules) throws IOException {
+        final String imageExt = ".png";
+        final String name = "/assets/accessory/"
+                + Integer.toHexString(accessoryID).toUpperCase() + imageExt;
         return rules.applyAll(ImageLoader.load(name,
                 AvatarImageLoader.class.getResource(name)));
     }
