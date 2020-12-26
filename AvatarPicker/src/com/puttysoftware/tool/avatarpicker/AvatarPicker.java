@@ -52,6 +52,7 @@ public class AvatarPicker {
 		JLabel avatarLabel = new JLabel();
 		JLabel idLabel = new JLabel("Avatar ID: ");
 		JTextField idText = new JTextField();
+		idText.setColumns(64);
 		JButton pickButton = new JButton("Pick");
 		pickButton.addActionListener(l -> {
 			try {
@@ -85,6 +86,7 @@ public class AvatarPicker {
 		});
 		content.setOpaque(true);
 		content.add(pickButton);
+		content.add(loadButton);
 		content.add(avatarLabel);
 		content.add(idLabel);
 		content.add(idText);
