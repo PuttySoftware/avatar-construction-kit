@@ -41,12 +41,12 @@ public class AvatarPicker {
 	 */
 	private void initialize() {
 		try {
-			errHandler = new ErrorLogger("AvatarPicker");
+			this.errHandler = new ErrorLogger("AvatarPicker");
 		} catch (RuntimeException e) {
 			e.printStackTrace();
 		}
-		frame = new JFrame("Avatar Picker");
-		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		this.frame = new JFrame("Avatar Picker");
+		this.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		JPanel content = new JPanel();
 		content.setLayout(new FlowLayout());
 		JLabel avatarLabel = new JLabel();
@@ -61,10 +61,10 @@ public class AvatarPicker {
 				avatarLabel.setIcon(avatarImage);
 				idLabel.setText("Avatar ID: ");
 				idText.setText(model.getAvatarImageID());
-				frame.pack();
+				this.frame.pack();
 			} catch (IOException e) {
-				if (errHandler != null) {
-					errHandler.logWarning(e);
+				if (this.errHandler != null) {
+					this.errHandler.logWarning(e);
 				}
 			}
 		});
@@ -75,10 +75,10 @@ public class AvatarPicker {
 				BufferedImageIcon avatarImage = model.generateAvatarImage();
 				avatarLabel.setIcon(avatarImage);
 				idLabel.setText("Avatar ID: ");
-				frame.pack();
+				this.frame.pack();
 			} catch (IOException e) {
-				if (errHandler != null) {
-					errHandler.logWarning(e);
+				if (this.errHandler != null) {
+					this.errHandler.logWarning(e);
 				}
 			} catch (IllegalArgumentException i) {
 				idLabel.setText("Avatar ID (INVALID): ");
@@ -90,8 +90,8 @@ public class AvatarPicker {
 		content.add(avatarLabel);
 		content.add(idLabel);
 		content.add(idText);
-		frame.setContentPane(content);
-		frame.pack();
+		this.frame.setContentPane(content);
+		this.frame.pack();
 	}
 
 	public static void main(String[] args) {
